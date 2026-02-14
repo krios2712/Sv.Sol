@@ -16,7 +16,7 @@ body{
     align-items:center;
     height:100vh;
     overflow:hidden;
-    transition:background 1s ease;
+    transition:background 2.5s ease;
 }
 
 /* ===== FASE 1 ===== */
@@ -58,6 +58,10 @@ img{
     width:220px;
     border-radius:12px;
     margin-top:15px;
+
+    display:block;          /* hace que deje de comportarse como inline */
+    margin-left:auto;       /* centra horizontalmente */
+    margin-right:auto;      /* centra horizontalmente */
 }
 
 .heart{
@@ -112,6 +116,31 @@ img{
     to{ opacity:0; visibility:hidden; }
 }
 
+/* ===== CAPA PARA TRANSICIÓN ENTRE FASES ===== */
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:inherit;
+    pointer-events:none;
+    opacity:0;
+    transition:opacity 1.2s ease;
+    z-index:0;
+}
+
+/* cuando activamos la transición */
+body.transicion::after{
+    opacity:1;
+}
+
+/* ===== ESTADO FINAL ===== */
+.card.final{
+    transform:scale(1.05);
+    transition:all 1.5s ease;
+    background:rgba(255,255,255,0.25);
+}
+
+
 
 </style>
 </head>
@@ -128,7 +157,7 @@ img{
 </div>
 
 <div class="card">
-    <h2 id="pregunta">¿Ya me extrañas? 🥺</h2>
+    <h2 id="pregunta">¿Ya me extrañas? </h2>
 
     <div id="botones">
         <button onclick="respuestaSi()">Sí 💖</button>
@@ -138,6 +167,14 @@ img{
     <p id="mensaje"></p>
     <img id="gif" style="display:none;">
 </div>
+<!-- ===== MUSICA ===== -->
+<audio id="musicaFase1" loop>
+    <source src="cancion1.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="musicaFase2" loop>
+    <source src="cancion2.mp3" type="audio/mpeg">
+</audio>
 
 <script>
 
@@ -145,52 +182,57 @@ function iniciar(){
     const intro=document.getElementById("intro");
     intro.style.animation="fadeOut 1s forwards";
 
-    // Aquí luego activaremos la música
-}
+    const musica1=document.getElementById("musicaFase1");
 
+    musica1.currentTime = 1; // ← CAMBIA ESTE NÚMERO por el segundo que quieras
+    musica1.volume = 0.4;
+    musica1.play();
+}
 
 
 let fase = 1;
 let contadorNo = 0;
+let yaDijoNoEnFase1 = false; // ← desbloquea el Sí solo después del primer No
+
 
 /* ============================
    FASE 1 — ¿YA ME EXTRAÑAS?
 ============================ */
 const mensajesNoFase1 = [
-    "¿Cómo que no? 😭",
-    "Ni un poquito aunque sea...",
-    "Mentira yo sé que sí 😤",
-    "Vamos... acéptalo 😌",
-    "No seas así conmigo 🥺",
+    "¿Que cómo que no?",
+    "¿Ni siquiera un poquito?",
+    "Yo se que si mi amor",
+    "Solo acéptalo dale",
+    "Te extrañé mucho Solange, ¿tú también?",
 ];
 
 const gifsNoFase1 = [
-    "https://media.giphy.com/media/3o6ZtaO9BZHcOjmErm/giphy.gif",
-    "https://media.giphy.com/media/l378giAZgxPw3eO52/giphy.gif",
-    "https://media.giphy.com/media/9Y5BbDSkSTiY8/giphy.gif",
-    "https://media.giphy.com/media/ROF8OQvDmxytW/giphy.gif",
-    "https://media.giphy.com/media/XpgOZHuDfIkoM/giphy.gif"
+    "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbjhhczVmZWZwM284aHl2ejhvb3gzbmlnMmg3ODgwN2lmeDJxeGw1cCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ZQOK8SFetn75GK9HEi/giphy.gif",
+    "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExb255d2NtdmFvY2QydmFtemVsbzA0d2l0bXd6aXppOWN6MXpwaDJmeCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/lprIQG8Pl3T4gktKOZ/giphy.gif",
+    "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMmNvZmx2ejE4dmZ6ejBsZG1iNjlzYWphNnM3aDJzbmVzNm81eTgwcCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/849C3YApus6Fq/giphy.gif",
+    "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZDZybGZvY2llcXNyZnBnbDhmbHVpN3ZubnNtMG85aHo4aWIzYWJ1OCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/sWBzg2D15WwQjHcxbt/giphy.gif",
+    "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExamlxODgzcG9pdW9kdW9uODZtdXBxdjJhNXB1dDBhZG15YjBzN2twayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/f9EmXxglhdhAj1bo28/giphy.gif"
 ];
 
 /* ============================
    FASE 2 — ¿QUIERES SER MI VALENTÍN?
 ============================ */
 const mensajesNoFase2 = [
-    "¿Segura?",
+    "¿Segura no quieres? Dale dime",
     "Wtf?? ese no era",
-    "Te equivocaste otra vez 😑",
-    "Ya en serio dime que sí :c",
-    "No programé esto para un no 😭",
-    "Te amo, tengamos nuestro San Valentín 💘",
+    "Te equivocaste otra vez",
+    "Ya en serio dime que sí 😭",
+    "No programé esto para un no",
+    "Te amo con todo mi corazón Solange, Feliz Día de San Valentín",
 ];
 
 const gifsNoFase2 = [
     "https://media.giphy.com/media/BNlSrpW0e4nbgVZ2we/giphy.gif",
     "https://media.giphy.com/media/QxcSqRe0nllClKLMDn/giphy.gif",
-    "https://media.giphy.com/media/26ufcYAkp8e66vanu/giphy.gif",
-    "https://media.giphy.com/media/OPU6wzx8JrHna/giphy.gif",
+    "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZXNyMWl3aWJteWlmb2ltMTM0Mjh0Y2J4c3loOGRqem1vMmx2bG45ciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/fb5lozVxhBwVFFByW8/giphy.gif",
+    "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExOWFmdHgxa2UxZmtmYzg2Yjh6OWdiazFwajMxa2h2OXNrMnJ3MmZkdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ruyS8Zw9sBqE5UjOnY/giphy.gif",
     "https://media.giphy.com/media/YLPOIP1jPu1N87yemm/giphy.gif",
-    "https://media.giphy.com/media/L95W4wv8nnb9K/giphy.gif"
+    "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExbW5ubTR1c3ZmMTA4ZWtqNjBpNG93M3l3dnFrM3NlemVsZDRlZmluMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/8QbwUh40Hl96yMgvOx/giphy.gif"
 ];
 
 /* ============================
@@ -198,7 +240,21 @@ const gifsNoFase2 = [
 ============================ */
 function respuestaSi(){
 
+    /* ---- BLOQUEO DEL PRIMER "SÍ" EN FASE 1 ---- */
     if(fase === 1){
+
+        // Si aún no ha presionado NO al menos una vez
+        if(!yaDijoNoEnFase1){
+            document.getElementById("pregunta").innerText="¿Si? No te creo dime la verdad";
+
+            const gif=document.getElementById("gif");
+            gif.src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdXF2MjBrcGE1M2d6YzV2ZnozeGoyank5NTUycW1wb3BibWI4NWRlcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/UtpAcjic1HtFdZFus8/giphy.gif";
+            gif.style.display="block";
+
+            return; // Bloquea avanzar
+        }
+
+        // Ya presionó NO al menos una vez → ahora sí puede avanzar
         fase = 2;
         contadorNo = 0;
 
@@ -206,26 +262,44 @@ function respuestaSi(){
         document.body.classList.add("fase2");
 
         document.getElementById("pregunta").innerText="¿Quieres ser mi Valentín? 💘";
+        document.getElementById("mensaje").innerText="";
         document.getElementById("gif").style.display="none";
+
+        cambiarMusica();
         return;
     }
 
-    document.getElementById("pregunta").innerText="Lo sabíaaaa 😭💖";
-    document.getElementById("mensaje").innerText="Te amo mi Solecito ✨";
+    /* ---- FINAL DEFINITIVO ---- */
+
+    document.getElementById("pregunta").innerText="Lo sabíaaaa";
+    document.getElementById("mensaje").innerText="Te amo mi Solecito, nunca lo voy a dejar de hacer y aunque tengamos malos ratos, ya te lo dije, siempre voy a querer volver a ti";
+
+    document.getElementById("botones").style.display="none";
+
+    const card=document.querySelector(".card");
+    card.classList.add("final");
 
     const gif=document.getElementById("gif");
     gif.src="https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif";
     gif.style.display="block";
 
     lanzarCorazones();
-}
 
+    setTimeout(()=>{
+        const extra=document.getElementById("finalExtra");
+        extra.innerText="Ahora tenemos una cita pendiente YA DIJE boee le obligaba.";
+        extra.style.opacity=1;
+    },2000);
+}
 /* ============================
    RESPUESTA NO
 ============================ */
 function respuestaNo(){
 
     if(fase === 1){
+
+        // Ahora el "Sí" queda desbloqueado
+        yaDijoNoEnFase1 = true;
 
         if(contadorNo < mensajesNoFase1.length){
             document.getElementById("pregunta").innerText=mensajesNoFase1[contadorNo];
@@ -269,6 +343,34 @@ function lanzarCorazones(){
         setTimeout(()=>heart.remove(),4000);
     },300);
 }
+
+function cambiarMusica(){
+    const musica1=document.getElementById("musicaFase1");
+    const musica2=document.getElementById("musicaFase2");
+
+    musica2.currentTime = 41.5; // ← segundo donde quieres que empiece la segunda canción
+    musica2.volume = 0;
+    musica2.play();
+
+    let fadeOut=setInterval(()=>{
+        if(musica1.volume>0.05){
+            musica1.volume-=0.05;
+        }else{
+            musica1.pause();
+            clearInterval(fadeOut);
+        }
+    },100);
+
+    let fadeIn=setInterval(()=>{
+        if(musica2.volume<0.4){
+            musica2.volume+=0.05;
+        }else{
+            clearInterval(fadeIn);
+        }
+    },100);
+}
+
+
 </script>
 
 </body>
