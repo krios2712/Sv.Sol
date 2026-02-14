@@ -6,10 +6,9 @@
 <title>San Valentín 💖</title>
 
 <style>
-body {
+body{
     margin:0;
     font-family:-apple-system, Arial, sans-serif;
-    background:linear-gradient(135deg,#ff4d6d,#ff8fa3);
     color:white;
     text-align:center;
     display:flex;
@@ -17,9 +16,20 @@ body {
     align-items:center;
     height:100vh;
     overflow:hidden;
+    transition:background 1s ease;
 }
 
-.card {
+/* ===== FASE 1 ===== */
+body.fase1{
+    background:linear-gradient(135deg,#667eea,#764ba2);
+}
+
+/* ===== FASE 2 ===== */
+body.fase2{
+    background:linear-gradient(135deg,#ff4d6d,#ff8fa3);
+}
+
+.card{
     background:rgba(255,255,255,0.15);
     padding:30px;
     border-radius:20px;
@@ -28,7 +38,7 @@ body {
     max-width:320px;
 }
 
-button {
+button{
     margin:10px;
     padding:12px 20px;
     border:none;
@@ -37,31 +47,88 @@ button {
     cursor:pointer;
     background:white;
     color:#ff4d6d;
+    transition:transform .2s;
 }
 
-img {
+button:hover{
+    transform:scale(1.05);
+}
+
+img{
     width:220px;
     border-radius:12px;
     margin-top:15px;
 }
 
-.heart {
+.heart{
     position:absolute;
     font-size:24px;
     animation:float 4s linear infinite;
 }
 
-@keyframes float {
-    from { transform:translateY(100vh); opacity:1; }
-    to { transform:translateY(-10vh); opacity:0; }
+@keyframes float{
+    from{ transform:translateY(100vh); opacity:1; }
+    to{ transform:translateY(-10vh); opacity:0; }
 }
+/* ===== INTRO PANTALLA ===== */
+#intro{
+    position:fixed;
+    inset:0;
+    background:linear-gradient(135deg,#1e1e2f,#3a3a6a);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:999;
+    animation:fadeIn 1.5s ease;
+}
+
+.intro-box{
+    text-align:center;
+    animation:zoom 1.2s ease;
+}
+
+.intro-box h1{
+    font-size:40px;
+    margin-bottom:10px;
+}
+
+.intro-box p{
+    opacity:.8;
+    margin-bottom:25px;
+}
+
+.intro-box button{
+    font-size:18px;
+    padding:14px 26px;
+}
+
+/* Animaciones */
+@keyframes zoom{
+    from{ transform:scale(.6); opacity:0; }
+    to{ transform:scale(1); opacity:1; }
+}
+
+@keyframes fadeOut{
+    to{ opacity:0; visibility:hidden; }
+}
+
+
 </style>
 </head>
 
-<body>
+<body class="fase1">
+
+<!-- ===== INTRO ===== -->
+<div id="intro">
+    <div class="intro-box">
+        <h1>Para ti 💌</h1>
+        <p>Tengo algo que preguntarte...</p>
+        <button onclick="iniciar()">Abrir 💖</button>
+    </div>
+</div>
 
 <div class="card">
-    <h2 id="pregunta">¿Quieres ser mi Valentín? 💘</h2>
+    <h2 id="pregunta">¿Ya me extrañas? 🥺</h2>
 
     <div id="botones">
         <button onclick="respuestaSi()">Sí 💖</button>
@@ -73,57 +140,124 @@ img {
 </div>
 
 <script>
+
+function iniciar(){
+    const intro=document.getElementById("intro");
+    intro.style.animation="fadeOut 1s forwards";
+
+    // Aquí luego activaremos la música
+}
+
+
+
+let fase = 1;
 let contadorNo = 0;
 
-// 👇 MENSAJES cuando dice NO (puedes cambiarlos)
-const mensajesNo = [
-    "¿Segura? ",
-    "Wtf?? ese no era",
-    "Jsjajs te equivocaste de nuevo amor",
-    "Ya en serio dime que si :c mira que me costó hacer esto xd",
-    "La verdad no programé esto para que digas no",
-    "Te amo, quiero que tengamos nuestro día de San Valentín",
+/* ============================
+   FASE 1 — ¿YA ME EXTRAÑAS?
+============================ */
+const mensajesNoFase1 = [
+    "¿Cómo que no? 😭",
+    "Ni un poquito aunque sea...",
+    "Mentira yo sé que sí 😤",
+    "Vamos... acéptalo 😌",
+    "No seas así conmigo 🥺",
 ];
 
-// 👇 GIFs para cada NO (puedes cambiarlos)
-const gifsNo = [
-    "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExajB0OHA0dzZ3cXlndXM5a2Z6cTNjd2M4bnJhMWQzOGw2YW5lNXdkeiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/BNlSrpW0e4nbgVZ2we/giphy.gif",
-    "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeGdvMmw0ZDl2emt3bnV3YjJocGR1d2JteDNqdXE1Y3hsMDExc3EyOSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/QxcSqRe0nllClKLMDn/giphy.gif",
+const gifsNoFase1 = [
+    "https://media.giphy.com/media/3o6ZtaO9BZHcOjmErm/giphy.gif",
+    "https://media.giphy.com/media/l378giAZgxPw3eO52/giphy.gif",
+    "https://media.giphy.com/media/9Y5BbDSkSTiY8/giphy.gif",
+    "https://media.giphy.com/media/ROF8OQvDmxytW/giphy.gif",
+    "https://media.giphy.com/media/XpgOZHuDfIkoM/giphy.gif"
+];
+
+/* ============================
+   FASE 2 — ¿QUIERES SER MI VALENTÍN?
+============================ */
+const mensajesNoFase2 = [
+    "¿Segura?",
+    "Wtf?? ese no era",
+    "Te equivocaste otra vez 😑",
+    "Ya en serio dime que sí :c",
+    "No programé esto para un no 😭",
+    "Te amo, tengamos nuestro San Valentín 💘",
+];
+
+const gifsNoFase2 = [
+    "https://media.giphy.com/media/BNlSrpW0e4nbgVZ2we/giphy.gif",
+    "https://media.giphy.com/media/QxcSqRe0nllClKLMDn/giphy.gif",
     "https://media.giphy.com/media/26ufcYAkp8e66vanu/giphy.gif",
     "https://media.giphy.com/media/OPU6wzx8JrHna/giphy.gif",
-    "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGl4eTkwdHE4OTlxMHZsYTM3Y3Q4MWFyaWk0bzUyNG4zanFuOXBxayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/YLPOIP1jPu1N87yemm/giphy.gif",
+    "https://media.giphy.com/media/YLPOIP1jPu1N87yemm/giphy.gif",
     "https://media.giphy.com/media/L95W4wv8nnb9K/giphy.gif"
 ];
 
-// 👇 Cuando finalmente dice SÍ
+/* ============================
+   RESPUESTA SI
+============================ */
 function respuestaSi(){
-    document.getElementById("pregunta").innerText="Lo sabíaaaa me amas mi amorrr, te extrañé maldita sea :(";
+
+    if(fase === 1){
+        fase = 2;
+        contadorNo = 0;
+
+        document.body.classList.remove("fase1");
+        document.body.classList.add("fase2");
+
+        document.getElementById("pregunta").innerText="¿Quieres ser mi Valentín? 💘";
+        document.getElementById("gif").style.display="none";
+        return;
+    }
+
+    document.getElementById("pregunta").innerText="Lo sabíaaaa 😭💖";
     document.getElementById("mensaje").innerText="Te amo mi Solecito ✨";
 
     const gif=document.getElementById("gif");
-    gif.src="https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif"; // ← TU GIF FELIZ
+    gif.src="https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif";
     gif.style.display="block";
 
     lanzarCorazones();
 }
 
-// 👇 Cuando dice NO
+/* ============================
+   RESPUESTA NO
+============================ */
 function respuestaNo(){
-    if(contadorNo < mensajesNo.length){
-        document.getElementById("pregunta").innerText=mensajesNo[contadorNo];
 
-        const gif=document.getElementById("gif");
-        gif.src=gifsNo[contadorNo];
-        gif.style.display="block";
+    if(fase === 1){
 
-        contadorNo++;
+        if(contadorNo < mensajesNoFase1.length){
+            document.getElementById("pregunta").innerText=mensajesNoFase1[contadorNo];
+
+            const gif=document.getElementById("gif");
+            gif.src=gifsNoFase1[contadorNo];
+            gif.style.display="block";
+
+            contadorNo++;
+        }else{
+            contadorNo = 0;
+        }
+
     }else{
-        // reinicia el ciclo si sigue diciendo no 😅
-        contadorNo = 0;
+
+        if(contadorNo < mensajesNoFase2.length){
+            document.getElementById("pregunta").innerText=mensajesNoFase2[contadorNo];
+
+            const gif=document.getElementById("gif");
+            gif.src=gifsNoFase2[contadorNo];
+            gif.style.display="block";
+
+            contadorNo++;
+        }else{
+            contadorNo = 0;
+        }
     }
 }
 
-// 💖 Animación de corazones cuando acepta
+/* ============================
+   CORAZONES FINALES
+============================ */
 function lanzarCorazones(){
     setInterval(()=>{
         const heart=document.createElement("div");
